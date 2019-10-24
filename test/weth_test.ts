@@ -168,7 +168,7 @@ describe("WethHelper test suite", function (): void {
                 assert(actual.isEqualTo(unitValue), "converted unit values should match");
             });
             it("should throw for values that are too large", () => {
-                assert.throws(() => wethHelper.toBaseUnits(NEGATIVE_ONE));
+                assert.throws(() => wethHelper.toBaseUnits(MAX_UINT256_PLUS_ONE));
             });
             it("should throw for negative values", () => {
                 assert.throws(() => wethHelper.toBaseUnits(NEGATIVE_ONE));
