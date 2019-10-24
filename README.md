@@ -2,7 +2,7 @@
 
 Exports a helper class `WethHelper` to simplify interactions with the canonical [wrapped Ether](https://weth.io) (WETH9) contract.
 
-Documentation can be found in the [`docs/`](./docs) folder.
+Documentation can be found in the [`docs/`](./docs/classes/wethhelper.md) folder.
 
 ## Usage
 
