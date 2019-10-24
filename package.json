@@ -18,6 +18,14 @@
     "start:snapshot": "docker run -d --rm -p 8545:8545 --name zrx ${npm_package_config_image}",
     "stop:snapshot": "docker kill zrx"
   },
+  "dependencies": {
+    "@0x/abi-gen-wrappers": "^5.3.2",
+    "@0x/assert": "^2.1.6",
+    "@0x/contract-addresses": "^3.2.0",
+    "@0x/utils": "^4.5.2",
+    "@0x/web3-wrapper": "^6.0.13",
+    "@habsyr/erc20-token": "^0.2.0"
+  },
   "devDependencies": {
     "@0x/types": "^2.4.3",
     "@kosu/test-helpers": "^0.3.0",
@@ -29,8 +37,7 @@
     "typedoc": "^0.15.0",
     "typedoc-plugin-markdown": "^2.2.11",
     "typescript": "^3.6.4",
-    "web3": "^1.2.2",
-    "web3-core": "^1.2.2"
+    "web3": "^1.2.2"
   },
   "config": {
     "image": "gcr.io/zaidan-eth-net/0x-snapshot:0.2.1"
@@ -42,13 +49,5 @@
   ],
   "publishConfig": {
     "access": "public"
-  },
-  "dependencies": {
-    "@0x/abi-gen-wrappers": "^5.3.2",
-    "@0x/assert": "^2.1.6",
-    "@0x/contract-addresses": "^3.2.0",
-    "@0x/utils": "^4.5.2",
-    "@0x/web3-wrapper": "^6.0.13",
-    "@habsyr/erc20-token": "^0.2.0"
   }
 }
