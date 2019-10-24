@@ -47,7 +47,6 @@ export class WethHelper {
      * @param txDefaults Optional defaults to use for all transactions.
      */
     constructor(provider: SupportedProvider, txDefaults: Partial<TxData> = {}) {
-        assert.isWeb3Provider("provider", provider);
         providerUtils.standardizeOrThrow(provider);
 
         this.ready = false;
