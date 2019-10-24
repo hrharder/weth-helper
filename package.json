@@ -12,15 +12,28 @@
     "clean": "rm -rf node_modules lib",
     "lint": "tslint -p .",
     "lint:fix": "tslint -p . --fix",
-    "docs": "typedoc ./src"
+    "docs": "typedoc ./src",
+    "test": "yarn start:snapshot && sleep 2 && yarn test:ci && yarn stop:snapshot",
+    "test:ci": "ts-mocha --exit test/*_test.ts",
+    "start:snapshot": "docker run -d --rm -p 8545:8545 --name zrx ${npm_package_config_image}",
+    "stop:snapshot": "docker kill zrx"
   },
   "devDependencies": {
     "@0x/types": "^2.4.3",
+    "@kosu/test-helpers": "^0.3.0",
+    "@types/mocha": "^5.2.7",
     "ethereum-types": "^2.1.6",
+    "mocha": "^6.2.2",
+    "ts-mocha": "^6.0.0",
     "tslint": "^5.20.0",
     "typedoc": "^0.15.0",
     "typedoc-plugin-markdown": "^2.2.11",
-    "typescript": "^3.6.4"
+    "typescript": "^3.6.4",
+    "web3": "^1.2.2",
+    "web3-core": "^1.2.2"
+  },
+  "config": {
+    "image": "gcr.io/zaidan-eth-net/0x-snapshot:0.2.1"
   },
   "files": [
     "dist/*.js",
