@@ -167,14 +167,11 @@ describe("WethHelper test suite", function (): void {
                 const actual = wethHelper.fromBaseUnits(baseUnitValue);
                 assert(actual.isEqualTo(unitValue), "converted unit values should match");
             });
-            it("should throw for values that are too large", () => {
-                assert.throws(() => wethHelper.toBaseUnits(MAX_UINT256_PLUS_ONE));
-            });
             it("should throw for negative values", () => {
-                assert.throws(() => wethHelper.toBaseUnits(NEGATIVE_ONE));
+                assert.throws(() => wethHelper.fromBaseUnits(NEGATIVE_ONE));
             });
             it("should throw for non-numerical values", () => {
-                assert.throws(() => wethHelper.toBaseUnits("foo"));
+                assert.throws(() => wethHelper.fromBaseUnits("foo"));
             });
         });
     });
@@ -183,21 +180,27 @@ describe("WethHelper test suite", function (): void {
         const web3 = new Web3Wrapper(new Web3(ETHEREUM_JSONRPC_URL).currentProvider as any);
         const wethHelper = new WethHelper(web3.getProvider());
 
-        it("#WethHelper.prototype.coinbase", async () => {
-            await (wethHelper as any)._init;
-            const coinbase = (await web3.getAvailableAddressesAsync())[0];
-            assert.strictEqual(wethHelper.coinbase.toLowerCase(), coinbase.toLowerCase(), "coinbases should match");
+        describe("#coinbase", () => {
+            it("should match coinbase address", async () => {
+                await (wethHelper as any)._init;
+                const coinbase = (await web3.getAvailableAddressesAsync())[0];
+                assert.strictEqual(wethHelper.coinbase.toLowerCase(), coinbase.toLowerCase(), "coinbases should match");
+            });
         });
 
-        it("#WethHelper.prototype.networkId", async () => {
-            await (wethHelper as any)._init;
-            const networkId = await web3.getNetworkIdAsync();
-            assert.strictEqual(wethHelper.networkId, networkId, "network IDs should match");
+        describe("#networkId", () => {
+            it("should match the detected network ID", async () => {
+                await (wethHelper as any)._init;
+                const networkId = await web3.getNetworkIdAsync();
+                assert.strictEqual(wethHelper.networkId, networkId, "network IDs should match");
+            });
         });
-        it("#WethHelper.prototype.wethAddress", async () => {
-            await (wethHelper as any)._init;
-            const wethAddress = await getContractAddressesForNetworkOrThrow(await web3.getNetworkIdAsync()).etherToken;
-            assert.strictEqual(wethHelper.wethAddress.toLowerCase(), wethAddress.toLowerCase(), "wrapped ether addresses should match");
+        describe("#wethAddress", () => {
+            it("should match the ether token address", async () => {
+                await (wethHelper as any)._init;
+                const wethAddress = await getContractAddressesForNetworkOrThrow(await web3.getNetworkIdAsync()).etherToken;
+                assert.strictEqual(wethHelper.wethAddress.toLowerCase(), wethAddress.toLowerCase(), "wrapped ether addresses should match");
+            });
         });
     });
 });
