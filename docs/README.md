@@ -2,9 +2,9 @@
 
 # Wrapped Ether Helper
 
-# Wrapped Ether Helper (`@habsyr/weth-helper`)
+# WETH Helper (`@habsyr/weth-helper`)
 
-Exports a helper class `WethHelper` to simplify interactions with the canonical wrapped Ether (WETH9) contract.
+Exports a helper class `WethHelper` to simplify interactions with the canonical [wrapped Ether](https://weth.io) (WETH9) contract.
 
 Documentation can be found in the [`docs/`](./docs) folder.
 
@@ -53,7 +53,7 @@ const { WethHelper } = require("@habsyr/weth-helper");
     const wethHelper = new WethHelper(window.ethereum);
 
     // use any public methods after construction
-    const one = wethHelper.toBaseUnit(1);
+    const one = wethHelper.toBaseUnits(1);
     const txId = await wethHelper.wrap(one);
 })();
 ```
@@ -80,7 +80,7 @@ const wethHelper = new WethHelper(web3.currentProvider);
 1. Build source (`yarn build`)
 1. Lint source (`yarn lint`)
 1. Generate docs (`yarn docs`)
-1. Run tests (`yarn test`)
+1. Run tests against Ganache RPC (`yarn test`)
 
 ## License
 
