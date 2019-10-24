@@ -1,6 +1,6 @@
 {
   "name": "@habsyr/weth-helper",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A simple class for helping to wrap and unwrap Ether.",
   "main": "lib/index.js",
   "repository": "https://github.com/hrharder/weth-helper",
