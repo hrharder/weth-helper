@@ -1,6 +1,6 @@
-[Zaidan dealer client](README.md) › [Globals](globals.md)
+[Wrapped Ether Helper](README.md) › [Globals](globals.md)
 
-# Zaidan dealer client
+# Wrapped Ether Helper
 
 ## Index
 
