@@ -1,0 +1,41 @@
+{
+  "name": "@habsyr/weth-helper",
+  "version": "0.0.0",
+  "description": "A simple class for helping to wrap and unwrap Ether.",
+  "main": "lib/index.js",
+  "repository": "https://github.com/hrharder/weth-helper",
+  "author": "Henry Harder",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf node_modules lib",
+    "lint": "tslint -p .",
+    "lint:fix": "tslint -p . --fix",
+    "docs": "typedoc ./src"
+  },
+  "devDependencies": {
+    "@0x/types": "^2.4.3",
+    "ethereum-types": "^2.1.6",
+    "tslint": "^5.20.0",
+    "typedoc": "^0.15.0",
+    "typedoc-plugin-markdown": "^2.2.11",
+    "typescript": "^3.6.4"
+  },
+  "files": [
+    "dist/*.js",
+    "dist/*.js.map",
+    "dist/*.d.ts"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@0x/abi-gen-wrappers": "^5.3.2",
+    "@0x/assert": "^2.1.6",
+    "@0x/contract-addresses": "^3.2.0",
+    "@0x/utils": "^4.5.2",
+    "@0x/web3-wrapper": "^6.0.13",
+    "@habsyr/erc20-token": "^0.2.0"
+  }
+}
