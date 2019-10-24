@@ -181,7 +181,7 @@ export class WethHelper {
      * @param value The value (as a number, string, or BigNumber) to convert.
      * @param decimals Optionally specify the number of decimals in a unit (default: 18).
      */
-    public toBaseUnit(value: number | string | BigNumber, decimals: number = 18): BigNumber {
+    public toBaseUnits(value: number | string | BigNumber, decimals: number = 18): BigNumber {
         const bn = new BigNumber(value);
         if (bn.isNaN() || bn.isNegative()) {
             throw new Error(`[weth-helper] invalid base unit value (must be positive and numerical)`);
@@ -196,7 +196,7 @@ export class WethHelper {
      * @param value The value (as a number, string, or BigNumber) to convert.
      * @param decimals Optionally specify the number of decimals in a unit (default: 18).
      */
-    public fromBaseUnit(value: number | string | BigNumber, decimals: number = 18): BigNumber {
+    public fromBaseUnits(value: number | string | BigNumber, decimals: number = 18): BigNumber {
         const bn = new BigNumber(value);
         assert.isValidBaseUnitAmount("value", bn);
         return Web3Wrapper.toUnitAmount(bn, decimals);
