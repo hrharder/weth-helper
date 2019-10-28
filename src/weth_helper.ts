@@ -140,6 +140,26 @@ export class WethHelper {
     }
 
     /**
+     * Get the current 0x ERC-20 asset proxy allowance for the wrapped ether token
+     * for the detected network (returns a `BigNumber` value in base units).
+     *
+     * @param owner The address to check WETH proxy allowance for (defaults to coinbase).
+     * @returns A BigNumber representing the current WETH asset proxy allowance.
+     */
+    public async getProxyAllowance(owner?: string): Promise<BigNumber> {
+        await this._init;
+        if (owner) {
+            assert.isETHAddressHex("owner", owner);
+        }
+
+        try {
+            return this._erc20.getProxyAllowanceAsync(this.wethAddress, owner || this.coinbase);
+        } catch (error) {
+            throw new Error(`[weth-helper] failed to get ERC-20 proxy allowance for WETH: ${error.message}`);
+        }
+    }
+
+    /**
      * Set an arbitrary spender allowance value for the 0x ERC-20 proxy contract
      * for the wrapped-ether (WETH) token for trading in the 0x ecosystem.
      *

@@ -132,6 +132,17 @@ describe("WethHelper test suite", function (): void {
             });
         });
 
+        describe("#getProxyAllowance", async () => {
+            const { erc20Proxy, etherToken } = await getContractAddressesForNetworkOrThrow(await web3.getNetworkIdAsync());
+
+            it("should set an arbitrary asset proxy value correctly", async () => {
+                const address = await web3.getAvailableAddressesAsync()[2];
+                const expectedAllowance = await erc20.getAllowanceAsync(etherToken, address, erc20Proxy);
+                const acutalAllowance = await wethHelper.getProxyAllowance(address);
+                assert(expectedAllowance.isEqualTo(acutalAllowance), "allowances should match from weth-helper");
+            });
+        });
+
         describe("#setUnlimitedProxyAllowance", async () => {
             const { erc20Proxy, etherToken } = await getContractAddressesForNetworkOrThrow(await web3.getNetworkIdAsync());
 
