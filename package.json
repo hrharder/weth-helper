@@ -43,9 +43,9 @@
     "image": "gcr.io/zaidan-eth-net/0x-snapshot:0.2.1"
   },
   "files": [
-    "dist/*.js",
-    "dist/*.js.map",
-    "dist/*.d.ts"
+    "lib/*.js",
+    "lib/*.js.map",
+    "lib/*.d.ts"
   ],
   "publishConfig": {
     "access": "public"
