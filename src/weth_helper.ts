@@ -19,25 +19,16 @@ import { SupportedProvider, TxData } from "ethereum-types";
  * Methods are provided to convert between base units (wei) and ether.
  */
 export class WethHelper {
-    private readonly _provider: SupportedProvider;
-    private readonly _init: Promise<void>;
-    private readonly _web3: Web3Wrapper;
-    private readonly _txDefaults: Partial<TxData>;
+    private readonly _provider: SupportedProvider;  // JSONRPC provider
+    private readonly _init: Promise<void>;          // initialization promise
+    private readonly _web3: Web3Wrapper;            // Ethereum web3 wrapper
+    private readonly _txDefaults: Partial<TxData>;  // write (transaction) defaults
 
-    private _weth: WETH9Contract;
-    private _erc20: ERC20Token;
-
-    /** The users 0-index address (used if not overridden with TxData) */
-    public coinbase: string;
-
-    /** Ethereum network ID of the detected network. */
-    public networkId: number;
-
-    /** Token address of the canonical WETH contract for the configured network. */
-    public wethAddress: string;
-
-    /** Set to `true` after initialization completes. */
-    public ready: boolean;
+    private _weth: WETH9Contract;   // initialized wrapped-ether contract wrapper
+    private _erc20: ERC20Token;     // initialized ERC-20 token abstraction
+    private _coinbase: string;      // user's 0-index address
+    private _networkId: number;     // detected Ethereum network ID (from provider)
+    private _wethAddress: string;   // address of wETH contract for detected network
 
     /**
      * Create a new WethHelper instance with a configured provider and optional
@@ -49,12 +40,45 @@ export class WethHelper {
     constructor(provider: SupportedProvider, txDefaults: Partial<TxData> = {}) {
         providerUtils.standardizeOrThrow(provider);
 
-        this.ready = false;
         this._provider = provider;
         this._txDefaults = txDefaults;
 
         this._web3 = new Web3Wrapper(this._provider, this._txDefaults);
         this._init = this._initialize();
+    }
+
+    /**
+     * Get the user's 0-index address (used if not overridden with TxData) for
+     * transaction calls.
+     *
+     * In web3 browsers, the coinbase is the configured address.
+     *
+     * @returns A promise that resolves to the user's coinbase address.
+     */
+    public async getCoinbase(): Promise<string> {
+        await this._init;
+        return this._coinbase;
+    }
+
+    /**
+     * Get the detected Ethereum network ID (1 for mainnet, 3 for ropsten, etc.)
+     *
+     * @returns A promise that resolves to the network ID as a number.
+     */
+    public async getNetworkId(): Promise<number> {
+        await this._init;
+        return this._networkId;
+    }
+
+    /**
+     * Fetch the address for the canonical wrapped ether (wETH) contract for the
+     * detected Ethereum network.
+     *
+     * @returns A promise that resolves to the wETH token address.
+     */
+    public async getWethAddress(): Promise<string> {
+        await this._init;
+        return this._wethAddress;
     }
 
     /**
@@ -66,16 +90,17 @@ export class WethHelper {
      *
      * @param amount The amount of Ether to wrap in base units (wei).
      * @param txDefaults Optional transaction data: gas limit, gas price, and from address.
-     * @returns The submitted transaction hash (ID).
+     * @returns A promise that resolves to the submitted transaction hash (ID).
      */
     public async wrap(amount: BigNumber, txDefaults?: Partial<TxData>): Promise<string> {
-        await this._init;
         assert.isBigNumber("amount", amount);
         assert.isValidBaseUnitAmount("amount", amount);
 
+        const weth = await this._getWethContract();
         const options = txDefaults || this._txDefaults;
+
         try {
-            return this._weth.deposit.validateAndSendTransactionAsync({ value: amount, ...options });
+            return weth.deposit.validateAndSendTransactionAsync({ value: amount, ...options });
         } catch (error) {
             throw new Error(`[weth-helper] failed to wrap ether: ${error.message}`);
         }
@@ -90,16 +115,17 @@ export class WethHelper {
      *
      * @param amount The amount of Ether to un-wrap in base units (wei).
      * @param txDefaults Optional transaction data: gas limit, gas price, and from address.
-     * @returns The submitted transaction hash (ID).
+     * @returns A promise that resolves to the submitted transaction hash (ID).
      */
     public async unwrap(amount: BigNumber, txDefaults?: Partial<TxData>): Promise<string> {
-        await this._init;
         assert.isBigNumber("amount", amount);
         assert.isValidBaseUnitAmount("amount", amount);
 
+        const weth = await this._getWethContract();
         const options = txDefaults || this._txDefaults;
+
         try {
-            return this._weth.withdraw.validateAndSendTransactionAsync(amount, options);
+            return weth.withdraw.validateAndSendTransactionAsync(amount, options);
         } catch (error) {
             throw new Error(`[weth-helper] failed to wrap ether: ${error.message}`);
         }
@@ -111,12 +137,18 @@ export class WethHelper {
      * If no `address` parameter is defined, the detected coinbase is used.
      *
      * @param address A user's Ethereum address to check the balance for.
-     * @returns The user's ETH balance in base units (wei) as a `BigNumber`.
+     * @returns A promise that resolves to the user's ETH balance in base units (wei) as a `BigNumber`.
      */
     public async getEtherBalance(address?: string): Promise<BigNumber> {
-        await this._init;
+        if (address) {
+            assert.isETHAddressHex("address", address);
+        }
+
+        const web3 = await this._getWeb3Wrapper();
+        const owner = address || await this.getCoinbase();
+
         try {
-            return this._web3.getBalanceInWeiAsync(address || this.coinbase);
+            return web3.getBalanceInWeiAsync(owner);
         } catch (error) {
             throw new Error(`[weth-helper] failed to get ether balance: ${error.message}`);
         }
@@ -128,12 +160,19 @@ export class WethHelper {
      * If no `address` parameter is defined, the detected coinbase is used.
      *
      * @param address A user's Ethereum address to check the balance for.
-     * @returns The user's WETH balance in base units (wei) as a `BigNumber`.
+     * @returns A promise that resolves to the user's WETH balance in base units (wei) as a `BigNumber`.
      */
     public async getWethBalance(address?: string): Promise<BigNumber> {
-        await this._init;
+        if (address) {
+            assert.isETHAddressHex("address", address);
+        }
+
+        const wethAddress = await this.getWethAddress();
+        const erc20 = await this._getTokenWrapper();
+        const owner = address || await this.getCoinbase();
+
         try {
-            return this._erc20.getBalanceAsync(this.wethAddress, address || this.coinbase);
+            return erc20.getBalanceAsync(wethAddress, owner);
         } catch (error) {
             throw new Error(`[weth-helper] failed to get WETH balance: ${error.message}`);
         }
@@ -144,16 +183,19 @@ export class WethHelper {
      * for the detected network (returns a `BigNumber` value in base units).
      *
      * @param owner The address to check WETH proxy allowance for (defaults to coinbase).
-     * @returns A BigNumber representing the current WETH asset proxy allowance.
+     * @returns A promise that resolves to a BigNumber representing the current WETH asset proxy allowance.
      */
     public async getProxyAllowance(owner?: string): Promise<BigNumber> {
-        await this._init;
         if (owner) {
             assert.isETHAddressHex("owner", owner);
         }
 
+        const wethAddress = await this.getWethAddress();
+        const erc20 = await this._getTokenWrapper();
+        const address = owner || await this.getCoinbase();
+
         try {
-            return this._erc20.getProxyAllowanceAsync(this.wethAddress, owner || this.coinbase);
+            return erc20.getProxyAllowanceAsync(wethAddress, address);
         } catch (error) {
             throw new Error(`[weth-helper] failed to get ERC-20 proxy allowance for WETH: ${error.message}`);
         }
@@ -168,16 +210,18 @@ export class WethHelper {
      *
      * @param amount The amount of tokens to allow the proxy contract to spend (in base units).
      * @param txDefaults Optional transaction data: gas limit, gas price, and from address.
-     * @returns The submitted transaction hash (ID).
+     * @returns A promise that resolves to the submitted transaction hash (ID).
      */
     public async setProxyAllowance(amount: BigNumber, txDefaults?: Partial<TxData>): Promise<string> {
-        await this._init;
         assert.isBigNumber("amount", amount);
         assert.isValidBaseUnitAmount("amount", amount);
 
+        const wethAddress = await this.getWethAddress();
+        const erc20 = await this._getTokenWrapper();
         const options = txDefaults || this._txDefaults;
+
         try {
-            return this._erc20.setProxyAllowanceAsync(this.wethAddress, amount, options);
+            return erc20.setProxyAllowanceAsync(wethAddress, amount, options);
         } catch (error) {
             throw new Error(`[weth-helper] failed to set ERC-20 proxy allowance for WETH: ${error.message}`);
         }
@@ -188,7 +232,7 @@ export class WethHelper {
      * trading within the 0x ecosystem.
      *
      * @param txDefaults Optional transaction data: gas limit, gas price, and from address.
-     * @returns The submitted transaction hash (ID).
+     * @returns A promise that resolves to the submitted transaction hash (ID).
      */
     public async setUnlimitedProxyAllowance(txDefaults?: Partial<TxData>): Promise<string> {
         return this.setProxyAllowance(ERC20Token.UNLIMITED_ALLOWANCE, txDefaults);
@@ -200,6 +244,7 @@ export class WethHelper {
      *
      * @param value The value (as a number, string, or BigNumber) to convert.
      * @param decimals Optionally specify the number of decimals in a unit (default: 18).
+     * @returns A BigNumber representing the value converted to "base" units.
      */
     public toBaseUnits(value: number | string | BigNumber, decimals: number = 18): BigNumber {
         const bn = new BigNumber(value);
@@ -215,6 +260,7 @@ export class WethHelper {
      *
      * @param value The value (as a number, string, or BigNumber) to convert.
      * @param decimals Optionally specify the number of decimals in a unit (default: 18).
+     * @returns A BigNumber representing the value converted to "full" units.
      */
     public fromBaseUnits(value: number | string | BigNumber, decimals: number = 18): BigNumber {
         const bn = new BigNumber(value);
@@ -222,21 +268,46 @@ export class WethHelper {
         return Web3Wrapper.toUnitAmount(bn, decimals);
     }
 
+    /**
+     * Asynchronously fetch the initialized Ethereum JSONRPC (web3) abstraction.
+     */
+    private async _getWeb3Wrapper(): Promise<Web3Wrapper> {
+        await this._init;
+        return this._web3;
+    }
+
+    /**
+     * Asynchronously fetch the initialized WETH9 contract wrapper.
+     */
+    private async _getWethContract(): Promise<WETH9Contract> {
+        await this._init;
+        return this._weth;
+    }
+
+    /**
+     * Asynchronously fetch the initialized ERC-20 abstraction.
+     */
+    private async _getTokenWrapper(): Promise<ERC20Token> {
+        await this._init;
+        return this._erc20;
+    }
+
+    /**
+     * Asynchronously initialize Ethereum artifacts.
+     */
     private async _initialize(): Promise<void> {
         try {
-            this.networkId = await this._web3.getNetworkIdAsync();
-            const { etherToken } = getContractAddressesForNetworkOrThrow(this.networkId);
-            this.wethAddress = etherToken;
+            this._networkId = await this._web3.getNetworkIdAsync();
+            const { etherToken } = getContractAddressesForNetworkOrThrow(this._networkId);
+            this._wethAddress = etherToken;
 
             // update txDefaults to use coinbase if 'from' was not provided by user
             const addresses = await this._web3.getAvailableAddressesAsync();
-            this.coinbase = addresses.length > 0 ? addresses[0] : null;
-            this._txDefaults.from = this._txDefaults.from ? this._txDefaults.from : this.coinbase;
+            this._coinbase = addresses.length > 0 ? addresses[0] : null;
+            this._txDefaults.from = this._txDefaults.from ? this._txDefaults.from : this._coinbase;
 
-            this._weth = new WETH9Contract(this.wethAddress, this._provider, this._txDefaults);
+            this._weth = new WETH9Contract(this._wethAddress, this._provider, this._txDefaults);
             this._erc20 = new ERC20Token(this._provider, this._txDefaults);
-
-            this.ready = true;
         } catch (error) {
             throw new Error(`[weth-helper] failed to initialize: ${error.message}`);
         }
