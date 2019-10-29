@@ -1,5 +1,5 @@
 import { getContractAddressesForNetworkOrThrow } from "@0x/contract-addresses";
-import { ERC20Token, MAX_ALLOWANCE } from "@habsyr/erc20-token";
+import { ERC20Token } from "@habsyr/erc20-token";
 import assert from "assert";
 import Web3 from "web3";
 
@@ -28,8 +28,7 @@ describe("WethHelper test suite", function (): void {
                 wethHelper = new WethHelper(web3.getProvider());
             });
             it("should complete asynchronous initialization without error", async () => {
-                await (wethHelper as any)._init;
-                assert.strictEqual(wethHelper.ready, true, "wethHelper should be ready");
+                await assert.doesNotReject((wethHelper as any)._init);
             });
         });
 
@@ -185,32 +184,27 @@ describe("WethHelper test suite", function (): void {
                 assert.throws(() => wethHelper.fromBaseUnits("foo"));
             });
         });
-    });
 
-    describe("instance property tests", function (): void {
-        const web3 = new Web3Wrapper(new Web3(ETHEREUM_JSONRPC_URL).currentProvider as any);
-        const wethHelper = new WethHelper(web3.getProvider());
-
-        describe("#coinbase", () => {
+        describe("#getCoinbase", () => {
             it("should match coinbase address", async () => {
-                await (wethHelper as any)._init;
-                const coinbase = (await web3.getAvailableAddressesAsync())[0];
-                assert.strictEqual(wethHelper.coinbase.toLowerCase(), coinbase.toLowerCase(), "coinbases should match");
+                const expected = (await web3.getAvailableAddressesAsync())[0];
+                const actual = await wethHelper.getCoinbase();
+                assert.strictEqual(actual.toLowerCase(), expected.toLowerCase(), "coinbase addresses should match");
             });
         });
 
-        describe("#networkId", () => {
+        describe("#getNetworkId", () => {
             it("should match the detected network ID", async () => {
-                await (wethHelper as any)._init;
-                const networkId = await web3.getNetworkIdAsync();
-                assert.strictEqual(wethHelper.networkId, networkId, "network IDs should match");
+                const expected = await web3.getNetworkIdAsync();
+                const actual = await wethHelper.getNetworkId();
+                assert.strictEqual(actual, expected, "network IDs should match");
             });
         });
-        describe("#wethAddress", () => {
+        describe("#getWethAddress", () => {
             it("should match the ether token address", async () => {
-                await (wethHelper as any)._init;
-                const wethAddress = await getContractAddressesForNetworkOrThrow(await web3.getNetworkIdAsync()).etherToken;
-                assert.strictEqual(wethHelper.wethAddress.toLowerCase(), wethAddress.toLowerCase(), "wrapped ether addresses should match");
+                const expected = await getContractAddressesForNetworkOrThrow(await web3.getNetworkIdAsync()).etherToken;
+                const actual = await wethHelper.getWethAddress();
+                assert.strictEqual(actual.toLowerCase(), expected.toLowerCase(), "wrapped ether addresses should match");
             });
         });
     });
