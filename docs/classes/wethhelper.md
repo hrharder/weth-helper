@@ -48,7 +48,7 @@ Methods are provided to convert between base units (wei) and ether.
 
 \+ **new WethHelper**(`provider`: SupportedProvider, `txDefaults`: Partial‹TxData›): *[WethHelper](wethhelper.md)*
 
-*Defined in [weth_helper.ts:40](https://github.com/hrharder/weth-helper/blob/6a78607/src/weth_helper.ts#L40)*
+*Defined in [weth_helper.ts:40](https://github.com/hrharder/weth-helper/blob/1a475ff/src/weth_helper.ts#L40)*
 
 Create a new WethHelper instance with a configured provider and optional
 transaction defaults.
@@ -68,7 +68,7 @@ Name | Type | Default | Description |
 
 • **coinbase**: *string*
 
-*Defined in [weth_helper.ts:31](https://github.com/hrharder/weth-helper/blob/6a78607/src/weth_helper.ts#L31)*
+*Defined in [weth_helper.ts:31](https://github.com/hrharder/weth-helper/blob/1a475ff/src/weth_helper.ts#L31)*
 
 The users 0-index address (used if not overridden with TxData)
 
@@ -78,7 +78,7 @@ ___
 
 • **networkId**: *number*
 
-*Defined in [weth_helper.ts:34](https://github.com/hrharder/weth-helper/blob/6a78607/src/weth_helper.ts#L34)*
+*Defined in [weth_helper.ts:34](https://github.com/hrharder/weth-helper/blob/1a475ff/src/weth_helper.ts#L34)*
 
 Ethereum network ID of the detected network.
 
@@ -88,7 +88,7 @@ ___
 
 • **ready**: *boolean*
 
-*Defined in [weth_helper.ts:40](https://github.com/hrharder/weth-helper/blob/6a78607/src/weth_helper.ts#L40)*
+*Defined in [weth_helper.ts:40](https://github.com/hrharder/weth-helper/blob/1a475ff/src/weth_helper.ts#L40)*
 
 Set to `true` after initialization completes.
 
@@ -98,7 +98,7 @@ ___
 
 • **wethAddress**: *string*
 
-*Defined in [weth_helper.ts:37](https://github.com/hrharder/weth-helper/blob/6a78607/src/weth_helper.ts#L37)*
+*Defined in [weth_helper.ts:37](https://github.com/hrharder/weth-helper/blob/1a475ff/src/weth_helper.ts#L37)*
 
 Token address of the canonical WETH contract for the configured network.
 
@@ -108,7 +108,7 @@ Token address of the canonical WETH contract for the configured network.
 
 ▸ **fromBaseUnits**(`value`: number | string | BigNumber, `decimals`: number): *BigNumber*
 
-*Defined in [weth_helper.ts:219](https://github.com/hrharder/weth-helper/blob/6a78607/src/weth_helper.ts#L219)*
+*Defined in [weth_helper.ts:219](https://github.com/hrharder/weth-helper/blob/1a475ff/src/weth_helper.ts#L219)*
 
 Convert a "base-unit" value (accurate representation) to "unit" (user)
 representation used to display values to users.
@@ -128,7 +128,7 @@ ___
 
 ▸ **getEtherBalance**(`address?`: string): *Promise‹BigNumber›*
 
-*Defined in [weth_helper.ts:116](https://github.com/hrharder/weth-helper/blob/6a78607/src/weth_helper.ts#L116)*
+*Defined in [weth_helper.ts:116](https://github.com/hrharder/weth-helper/blob/1a475ff/src/weth_helper.ts#L116)*
 
 Fetch the Ether balance of an account (in base units).
 
@@ -150,7 +150,7 @@ ___
 
 ▸ **getProxyAllowance**(`owner?`: string): *Promise‹BigNumber›*
 
-*Defined in [weth_helper.ts:149](https://github.com/hrharder/weth-helper/blob/6a78607/src/weth_helper.ts#L149)*
+*Defined in [weth_helper.ts:149](https://github.com/hrharder/weth-helper/blob/1a475ff/src/weth_helper.ts#L149)*
 
 Get the current 0x ERC-20 asset proxy allowance for the wrapped ether token
 for the detected network (returns a `BigNumber` value in base units).
@@ -171,7 +171,7 @@ ___
 
 ▸ **getWethBalance**(`address?`: string): *Promise‹BigNumber›*
 
-*Defined in [weth_helper.ts:133](https://github.com/hrharder/weth-helper/blob/6a78607/src/weth_helper.ts#L133)*
+*Defined in [weth_helper.ts:133](https://github.com/hrharder/weth-helper/blob/1a475ff/src/weth_helper.ts#L133)*
 
 Fetch the wrapped-Ether (WETH) balance of an account (in base units).
 
@@ -193,7 +193,7 @@ ___
 
 ▸ **setProxyAllowance**(`amount`: BigNumber, `txDefaults?`: Partial‹TxData›): *Promise‹string›*
 
-*Defined in [weth_helper.ts:173](https://github.com/hrharder/weth-helper/blob/6a78607/src/weth_helper.ts#L173)*
+*Defined in [weth_helper.ts:173](https://github.com/hrharder/weth-helper/blob/1a475ff/src/weth_helper.ts#L173)*
 
 Set an arbitrary spender allowance value for the 0x ERC-20 proxy contract
 for the wrapped-ether (WETH) token for trading in the 0x ecosystem.
@@ -218,7 +218,7 @@ ___
 
 ▸ **setUnlimitedProxyAllowance**(`txDefaults?`: Partial‹TxData›): *Promise‹string›*
 
-*Defined in [weth_helper.ts:193](https://github.com/hrharder/weth-helper/blob/6a78607/src/weth_helper.ts#L193)*
+*Defined in [weth_helper.ts:193](https://github.com/hrharder/weth-helper/blob/1a475ff/src/weth_helper.ts#L193)*
 
 Set an "unlimited" (maximum `unit256`) ERC-20 proxy allowance for WETH for
 trading within the 0x ecosystem.
@@ -239,7 +239,7 @@ ___
 
 ▸ **toBaseUnits**(`value`: number | string | BigNumber, `decimals`: number): *BigNumber*
 
-*Defined in [weth_helper.ts:204](https://github.com/hrharder/weth-helper/blob/6a78607/src/weth_helper.ts#L204)*
+*Defined in [weth_helper.ts:204](https://github.com/hrharder/weth-helper/blob/1a475ff/src/weth_helper.ts#L204)*
 
 Convert a "unit" value (user representation) to base-unit (wei) representation
 used in contract logic.
@@ -259,7 +259,7 @@ ___
 
 ▸ **unwrap**(`amount`: BigNumber, `txDefaults?`: Partial‹TxData›): *Promise‹string›*
 
-*Defined in [weth_helper.ts:95](https://github.com/hrharder/weth-helper/blob/6a78607/src/weth_helper.ts#L95)*
+*Defined in [weth_helper.ts:95](https://github.com/hrharder/weth-helper/blob/1a475ff/src/weth_helper.ts#L95)*
 
 Generate ETH by "un-wrapping" WETH: submitting a transaction to request a
 withdrawal from the WETH contract.
@@ -284,7 +284,7 @@ ___
 
 ▸ **wrap**(`amount`: BigNumber, `txDefaults?`: Partial‹TxData›): *Promise‹string›*
 
-*Defined in [weth_helper.ts:71](https://github.com/hrharder/weth-helper/blob/6a78607/src/weth_helper.ts#L71)*
+*Defined in [weth_helper.ts:71](https://github.com/hrharder/weth-helper/blob/1a475ff/src/weth_helper.ts#L71)*
 
 Generate WETH by "wrapping" Ether: submitting it to the WETH contract using
 the deposit method.
